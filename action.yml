@@ -1,0 +1,28 @@
+name: VisibilityOS Audit Compare
+description: Compare matched AI answer checks and report changes in brand presence and links in the GitHub Actions job summary.
+author: PodPitch
+branding:
+  icon: bar-chart-2
+  color: blue
+inputs:
+  csv-path:
+    description: Path to the audit CSV relative to the checked-out workspace.
+    required: true
+outputs:
+  matched-comparisons:
+    description: Number of adjacent dated observations with matching audit fields.
+    value: ${{ steps.compare.outputs.matched-comparisons }}
+  presence-changes:
+    description: Number of pairs in which a brand mention or official link appeared or disappeared.
+    value: ${{ steps.compare.outputs.presence-changes }}
+  link-changes:
+    description: Number of pairs in which a link to the brand's official domain appeared or disappeared.
+    value: ${{ steps.compare.outputs.link-changes }}
+runs:
+  using: composite
+  steps:
+    - id: compare
+      shell: bash
+      env:
+        VISIBILITYOS_AUDIT_CSV: ${{ inputs.csv-path }}
+      run: python3 -I "$GITHUB_ACTION_PATH/report.py"
